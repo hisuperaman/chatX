@@ -1,0 +1,176 @@
+.h-fill{
+    min-height: -webkit-fill-available;
+    height: 100%;
+}
+
+/* transition properties */
+
+.dropdown-menu-enter{
+    position: absolute;
+    transform-origin: top right;
+    transform: scale(0.5);
+}
+
+.dropdown-menu-enter-active{
+    transform-origin: top right;
+    transform: scale(1);
+    transition: all 100ms;
+}
+
+.dropdown-menu-exit{
+    position: absolute;
+}
+
+.dropdown-menu-exit-active{
+    transform-origin: top right;
+    transform: scale(0);
+    color: rgba(0, 0, 0, 0);
+    transition: all 100ms;
+}
+
+
+/* contact card transitions */
+
+.contact-card-enter{
+    transform-origin: top center;
+    transform: scaleY(0.1);
+}
+
+.contact-card-enter-active{
+    transform-origin: top center;
+    transform: scaleY(1);
+    transition: all 100ms;
+}
+
+.contact-card-exit{
+    /* position: absolute; */
+}
+
+.contact-card-exit-active{
+    /* transform: scale(0.5);
+    transition: all 100ms; */
+}
+
+
+/* user-profile-pane transitions */
+.user-profile-pane-enter{
+    position: absolute;
+    left: -100%;
+}
+
+.user-profile-pane-enter-active{
+    left: 0;
+    transition: all 100ms;
+}
+
+.user-profile-pane-exit{
+    /* transform: scale(1); */
+    position: absolute;
+}
+
+.user-profile-pane-exit-active{
+    left: -100%;
+    transition: all 100ms;
+}
+
+/* user profile pane opened by chat pane */
+
+.user-profile-chat-pane-enter{
+    transform: translateX(100%);
+}
+
+.user-profile-chat-pane-enter-active{
+    transform: translateX(0);
+    transition: all 100ms;
+}
+
+.user-profile-chat-pane-exit{
+    
+}
+
+.user-profile-chat-pane-exit-active{
+    transform: translateX(100%);
+    transition: all 100ms;
+}
+
+
+/* loading bar transitions */
+.loading-bar-enter{
+    width: 40%;
+}
+
+.loading-bar-enter-active{
+    width: 40%;
+    transition: all 100ms;
+}
+
+.loading-bar-exit{
+    width: 100%;
+}
+
+.loading-bar-exit-active{
+    width: 100%;
+    transition: all 100ms;
+}
+
+/* tab sliding transitions */
+.tab-slide-enter{
+    
+}
+
+.tab-slide-enter-active{
+    
+}
+
+.tab-slide-exit{
+    transform: translateX(100%);
+}
+
+.tab-slide-exit-active{
+    transform: translateX(100%);
+    transition: transform 500ms ease-in-out;
+}
+
+
+/* unread message badge transitions */
+.unread-badge-enter{
+    opacity: 0;
+}
+
+.unread-badge-enter-active{
+    opacity: 1;
+    transition: opacity 200ms;
+}
+
+.unread-badge-exit{
+    opacity: 0;
+    transition: opacity 200ms;
+}
+
+.unread-badge-exit-active{
+    opacity: 0;
+    transition: opacity 200ms;
+}
+
+
+/* change pfp modal */
+.change-pfp-modal-enter{
+    transform-origin: top center;
+    transform: scaleY(0.1);
+}
+
+.change-pfp-modal-enter-active{
+    transform-origin: top center;
+    transform: scaleY(1);
+    transition: all 50ms;
+}
+
+.change-pfp-modal-exit{
+    opacity: 0.5;
+}
+
+.change-pfp-modal-exit-active{
+    transform-origin: top center;
+    transform: scaleY(0);
+    transition: all 50ms;
+}
