@@ -11,6 +11,10 @@ import homeRoutes from './routes/home-routes.js';
 import initSockets from './sockets/index.js';
 import { config } from './config.js';
 
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const app = express();
 
 dbConnect();
@@ -42,6 +46,6 @@ app.use("/otp", otpRoutes)
 app.use("/api", homeRoutes)
 
 
-server.listen("8000", () => {
-    console.log("Server started at port 8000");
+server.listen(process.env.PORT, () => {
+    console.log("Server started at port", process.env.PORT);
 })
