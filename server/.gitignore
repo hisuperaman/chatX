@@ -1,11 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-.env.DB_URI
-.env.MAIL_USER
-.env.MAIL_PASS
-.env.SECRET_KEY
-.env.MAIL_SERVICE
-.env.CLIENT_URL
+.env
 
 # dependencies
 /node_modules
