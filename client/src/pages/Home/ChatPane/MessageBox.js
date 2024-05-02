@@ -115,7 +115,7 @@ function MessageBox({activeContactData, isMobileScreen, onSend, rows, setRows}){
     const inputRef = useRef(null);
 
     let currentInput;
-    currentInput = (activeContactData.name in inputs)?(inputs[activeContactData.name]):'';
+    currentInput = (activeContactData.username in inputs)?(inputs[activeContactData.username]):'';
 
     useEffect(()=>{
         if(inputRef.current){
@@ -127,19 +127,19 @@ function MessageBox({activeContactData, isMobileScreen, onSend, rows, setRows}){
     }, [activeContactData, isMobileScreen])
 
     function handleInput(input){
-        const id = activeContactData.name;
+        const id = activeContactData.username;
         setInputs({...inputs, [id]: input});
     }
     
     function handleEmojiSelect(emoji){
-        const id = activeContactData.name;
+        const id = activeContactData.username;
         const newCurrentInput = currentInput+emoji;
         inputRef.current.focus();
         setInputs({...inputs, [id]: newCurrentInput});
     }
 
     function handleClearInput(){
-        const id = activeContactData.name;
+        const id = activeContactData.username;
         setInputs({...inputs, [id]: ''});
         setRows(1);
     }

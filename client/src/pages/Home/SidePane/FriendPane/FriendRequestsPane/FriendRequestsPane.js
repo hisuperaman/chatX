@@ -57,7 +57,7 @@ function FriendRequestsPane({ friendRequests, setFriendRequests, showSpinner, se
             <div className="w-full">
 
 
-                {showSpinner && <div className="mt-2"><Spinner /></div>}
+                {showSpinner && <div className="mt-2 overflow-hidden"><Spinner /></div>}
 
 
                 <div>

@@ -10,7 +10,7 @@ function chatSocket(io, socket) {
             const message = await Message.create({
                 message: data.messageObj.message,
 
-                sendingDatetime: data.messageObj.sendingDatetime,
+                sendingDatetime: new Date(),
 
                 status: 'sent',
                 receiver: data.receiver,
@@ -116,6 +116,41 @@ function chatSocket(io, socket) {
             deliveredDatetime: data.deliveredDatetime
         });
 
+    });
+
+
+    socket.on('setIsOnline', async (data) => {
+        const user = await User.findById(socket.id);
+
+        user.isOnline = true;
+        await user.save();
+
+        socket.broadcast.emit('changeIsOnline', {
+            sender: user._id,
+            isOnline: true
+        });
+
+        socket.emit('setIsOnlineConfirmed', {
+            
+        });
+    });
+
+    socket.on('disconnect', async (data) => {
+        const user = await User.findById(socket.id);
+
+        user.isOnline = false;
+        user.lastSeen = new Date();
+        await user.save();
+
+        socket.broadcast.emit('changeIsOnline', {
+            sender: user._id,
+            isOnline: false,
+            lastSeen: user.lastSeen
+        });
+
+        socket.emit('setIsOnlineConfirmed', {
+            
+        });
     });
 }
 

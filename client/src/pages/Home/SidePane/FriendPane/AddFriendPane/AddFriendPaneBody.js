@@ -84,7 +84,7 @@ function AddFriendPaneBody({ searchedUsers, setSearchedUsers, isUserProfilePaneO
                     <SearchBar placeholder={'Search users by username'} searchQuery={searchQuery} onSearchQueryChange={handleSearchQueryChange} />
                 </div>
 
-                {showSpinner && <div className="mt-2"><Spinner /></div>}
+                {showSpinner && <div className="mt-2 overflow-hidden"><Spinner /></div>}
 
                 <div>
                     {

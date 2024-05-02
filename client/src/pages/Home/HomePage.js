@@ -18,7 +18,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
     const navigate = useNavigate();
 
-    const [activeContactData, setActiveContactData] = useState({ id: null, name: null, pfp: null });
+    const [activeContactData, setActiveContactData] = useState({ id: null, name: null, username: null, pfp: null, isOnline: null, lastSeen: null });
     const [isChatActive, setIsChatActive] = useState(false);
 
     const [chatData, setChatData] = useState({});
@@ -37,8 +37,14 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
     const messageTransferredRef = useRef(false);
 
     useEffect(()=>{
-        initSocketIo(token);
-    }, [token]);
+        if(socket?!socket.connected:true){
+            initSocketIo(token);
+        }
+
+        if(socket?socket.connected:false){
+            socket.emit('setIsOnline');
+        }
+    }, [token, socket?socket.connected:undefined]);
 
 
     useEffect(() => {
@@ -266,6 +272,34 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             }
         });
 
+
+        socket.on('changeIsOnline', (data)=>{
+            const sender = data.sender;
+            const isOnline = data.isOnline;
+            const lastSeen = data.lastSeen;
+
+            if(contactData.some(contact=>contact.id===sender)){
+                setContactData((prevContactData)=>{
+                    let updatedContact = contactData.find(contact=>contact.id===sender);
+                    updatedContact.isOnline = isOnline;
+                    updatedContact.lastSeen = lastSeen;
+
+                    const prevContactDataFiltered = [...prevContactData].filter(contact=>contact.id!==sender);
+
+                    return [
+                        ...prevContactDataFiltered,
+                        updatedContact
+                    ]
+                });
+
+                if(activeContactData.id===sender){
+                    setActiveContactData({...activeContactData, isOnline, lastSeen})
+                }
+            }
+        });
+
+
+
         return () => {
             socket.off('newFriend');
             socket.off('receiveMessage');
@@ -275,6 +309,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             socket.off('readMessageConfirmed');
             socket.off('deliverMessageConfirmed');
             socket.off('deliveredStatusChangeAll');
+            socket.off('changeIsOnline');
         }
     }, [chatData, contactData]);
 
@@ -302,6 +337,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                             name: friend.name,
                             pfp: (friend.pfp) ? (friend.pfp) : (pfp),
                             about: friend.about,
+                            isOnline: friend.isOnline,
+                            lastSeen: friend.lastSeen,
                             messagePageIndex: 0
                         });
                     });
@@ -392,6 +429,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
     useEffect(()=>{
         console.log(chatData)
     }, [chatData])
+
 
     useEffect(() => {
         if (!token) {

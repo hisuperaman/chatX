@@ -235,6 +235,9 @@ export async function getFriends(req, res) {
                     about: friendObj.user.about,
                     email: friendObj.user.email,
                     pfp: friendObj.user.pfp,
+
+                    isOnline: friendObj.user.isOnline,
+                    lastSeen: friendObj.user.lastSeen
                 };
             }
             return {
@@ -244,6 +247,9 @@ export async function getFriends(req, res) {
                 about: friendObj.friend.about,
                 email: friendObj.friend.email,
                 pfp: friendObj.friend.pfp,
+
+                isOnline: friendObj.friend.isOnline,
+                lastSeen: friendObj.friend.lastSeen
             };
         });
 

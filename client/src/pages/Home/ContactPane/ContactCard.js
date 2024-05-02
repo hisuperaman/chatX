@@ -27,13 +27,13 @@ function UnreadMsgBadge({ unreadMsgCount, isActive }) {
     )
 }
 
-function ContactCard({ hasNewMessages, name, username, pfp, lastMsg, unreadMsgCount, onContactClick, id, onActive, isActive, about }) {
+function ContactCard({ hasNewMessages, name, username, pfp, lastMsg, unreadMsgCount, onContactClick, id, onActive, isActive, about, isOnline, lastSeen }) {
 
     const cardRef = useRef(null);
 
     function handleContactClick() {
         onActive(id);
-        onContactClick({ id: id, name: name, username: username, pfp: pfp, about: about });
+        onContactClick({ id: id, name: name, username: username, pfp: pfp, about: about, isOnline, lastSeen });
     }
 
 

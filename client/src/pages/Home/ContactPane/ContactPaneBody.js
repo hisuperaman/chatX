@@ -114,7 +114,7 @@ function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData
     return (
         <>
             {((sortedContactCardData.length <= 0 && contactData.length>0) || showSpinner) ? (
-                <div className="mt-3">
+                <div className="mt-3 overflow-hidden">
                     <Spinner />
                 </div>
             )
@@ -125,7 +125,7 @@ function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData
                         return (
                             <li key={contact.id}>
                                 {/* {console.log(newMsgContactIDs)} */}
-                                <ContactCard key={contact.id} hasNewMessages={newMsgContactIDs.includes(String(contact.id))} onContactClick={onContactClick} onActive={setActiveContact} id={contact.id} username={contact.username} name={contact.name} about={contact.about} pfp={contact.pfp} lastMsg={contact.lastMsg} unreadMsgCount={contact.unreadMsgCount} isActive={contact.isActive} />
+                                <ContactCard key={contact.id} hasNewMessages={newMsgContactIDs.includes(String(contact.id))} onContactClick={onContactClick} onActive={setActiveContact} id={contact.id} isOnline={contact.isOnline} lastSeen={contact.lastSeen} username={contact.username} name={contact.name} about={contact.about} pfp={contact.pfp} lastMsg={contact.lastMsg} unreadMsgCount={contact.unreadMsgCount} isActive={contact.isActive} />
                             </li>
                         )
                     })}
