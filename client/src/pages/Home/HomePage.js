@@ -41,11 +41,10 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             initSocketIo(token);
         }
 
-        if(socket?socket.connected:false){
+        if(socket?socket.connected:true){
             socket.emit('setIsOnline');
         }
-    }, [token, socket?socket.connected:undefined]);
-
+    }, [token, socket]);
 
     useEffect(() => {
         socket.on('newFriend', (data) => {
@@ -180,14 +179,21 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             
             setChatData((prevChatData) => {
 
-                const updatedConversation = Object.fromEntries(
-                    Object.entries(prevChatData[receiver]).map(([id, message])=>{
-                        if(message.isMyMessage){
-                            return [id, {...message, isRead: status==='read', status: status, readDatetime: readDatetime}];
-                        }
-                        return [id, message];
-                    })
-                )
+                let updatedConversation;
+                try{
+
+                    updatedConversation = Object.fromEntries(
+                        Object.entries(prevChatData[receiver]).map(([id, message])=>{
+                            if(message.isMyMessage){
+                                return [id, {...message, isRead: status==='read', status: status, readDatetime: readDatetime}];
+                            }
+                            return [id, message];
+                        })
+                    )
+                }
+                catch(e){
+                    updatedConversation = {};
+                }
     
                 return {
                     ...prevChatData,
@@ -255,14 +261,21 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             if(contactData.some(contact=>contact.id===receiver)){
                 setChatData((prevChatData) => {
     
-                    const updatedConversation = Object.fromEntries(
-                        Object.entries(prevChatData[receiver]).map(([id, message])=>{
-                            if(message.isMyMessage && (!message.isRead && message.status!='sending')){
-                                return [id, {...message, isRead: status==='read', status: status, deliveredDatetime: deliveredDatetime}];
-                            }
-                            return [id, message];
-                        })
-                    )
+                    let updatedConversation;
+                    try{
+
+                        updatedConversation = Object.fromEntries(
+                            Object.entries(prevChatData[receiver]).map(([id, message])=>{
+                                if(message.isMyMessage && (!message.isRead && message.status!='sending')){
+                                    return [id, {...message, isRead: status==='read', status: status, deliveredDatetime: deliveredDatetime}];
+                                }
+                                return [id, message];
+                            })
+                        )
+                    }
+                    catch(e){
+                        updatedConversation = {};
+                    }
         
                     return {
                         ...prevChatData,
@@ -425,10 +438,6 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             socket.off('deliverMessageAll');
         }
     }, [])
-
-    useEffect(()=>{
-        console.log(chatData)
-    }, [chatData])
 
 
     useEffect(() => {

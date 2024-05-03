@@ -106,10 +106,6 @@ function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData
         }
     }, [contactCardData]);
 
-    useEffect(()=>{
-        console.log(contactData.length)
-    }, [contactData])
-
 
     return (
         <>

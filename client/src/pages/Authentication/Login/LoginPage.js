@@ -7,11 +7,19 @@ import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../../components/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import { socket } from '../../../sio';
+
 function LoginPage({isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading}){
 
     const {token} = useContext(AuthContext);
 
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        if(socket){
+            socket.disconnect();
+        }
+    }, [socket]);
 
     useEffect(()=>{
         if(token){

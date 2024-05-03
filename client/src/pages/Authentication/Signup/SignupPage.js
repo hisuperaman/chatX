@@ -5,11 +5,19 @@ import { AuthContext } from '../../../components/AuthContext';
 import WelcomePane from '../components/WelcomePane';
 import FormPane from './FormPane';
 
+import { socket } from '../../../sio';
+
 function SignupPage({isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading}){
 
     const {token} = useContext(AuthContext);
 
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        if(socket){
+            socket.disconnect();
+        }
+    }, [socket]);
 
     useEffect(()=>{
         if(token){
