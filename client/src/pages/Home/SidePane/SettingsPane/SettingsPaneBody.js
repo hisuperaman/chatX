@@ -15,7 +15,7 @@ import SettingsCard from "./components/SettingsCard";
 
 function ToggleButton({isOn}) {
     return (
-        <div className="h-6 w-14 bg-dark-bigButtonNormal rounded-full border dark:border-white border-black">
+        <div className={`h-6 w-14 ${isOn?'bg-dark-bigButtonNormal':'bg-dark-line'} rounded-full border dark:border-white border-black`}>
             <div className={`w-2/5 h-full bg-white rounded-full ${isOn ? 'ml-[60%]' : 'ml-0'} transition-all duration-100`}></div>
         </div>
     )

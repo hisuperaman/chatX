@@ -7,12 +7,14 @@ import config from '../../../config.js';
 import { AuthContext } from "../../../components/AuthContext";
 import { socket } from "../../../sio";
 
-function ContactPane({ showSpinner, setShowSpinner, contactData, chatData, onContactClick, isMobileScreen, activeContactData, onIsChatActive, isChatActive, notificationData, setNotificationData, isDarkMode, setIsDarkMode, setIsLoading, activeContact, setActiveContact, friendRequests, setFriendRequests }) {
+function ContactPane({ showSpinner, setShowSpinner, contactData, chatData, onContactClick, isMobileScreen, activeContactData, onIsChatActive, isChatActive, notificationData, setNotificationData, isDarkMode, setIsDarkMode, setIsLoading, activeContact, setActiveContact, friendRequests, setFriendRequests, setContactData }) {
     const { token, clearGlobalToken } = useContext(AuthContext);
 
     const [clickedButton, setClickedButton] = useState(null);
 
     const [userData, setUserData] = useState({});
+
+    const [searchQuery, setSearchQuery] = useState('');
 
 
     useEffect(() => {
@@ -92,8 +94,8 @@ function ContactPane({ showSpinner, setShowSpinner, contactData, chatData, onCon
     return (
         <>
             <div className={`flex flex-col ${(isMobileScreen) ? 'w-full' : ('w-2/5')} ${(isChatActive && isMobileScreen) ? ('') : ('flex')}`}>
-                <ContactPaneTopBar onButtonClick={setClickedButton} notificationCount={getNotificationCount(notificationData)} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsLoading={setIsLoading} userData={userData} />
-                <ContactPaneBody showSpinner={showSpinner} contactData={contactData} chatData={chatData} activeContactData={activeContactData} onContactClick={onContactClick} onIsChatActive={onIsChatActive} isChatActive={isChatActive} activeContact={activeContact} setActiveContact={setActiveContact} />
+                <ContactPaneTopBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} onButtonClick={setClickedButton} notificationCount={getNotificationCount(notificationData)} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsLoading={setIsLoading} userData={userData} setContactData={setContactData} />
+                <ContactPaneBody searchQuery={searchQuery} showSpinner={showSpinner} contactData={contactData} chatData={chatData} activeContactData={activeContactData} onContactClick={onContactClick} onIsChatActive={onIsChatActive} isChatActive={isChatActive} activeContact={activeContact} setActiveContact={setActiveContact} />
             </div>
 
             <SidePane friendRequests={friendRequests} setFriendRequests={setFriendRequests} isMobileScreen={isMobileScreen} clickedButton={clickedButton} onBackClick={setClickedButton} notificationData={notificationData} setNotificationData={setNotificationData} contactData={contactData} userData={userData} onProfileInputConfirmClick={handleProfileInputConfirmClick} setIsLoading={setIsLoading} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />

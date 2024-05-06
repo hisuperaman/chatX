@@ -36,12 +36,12 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
     const messageTransferredRef = useRef(false);
 
-    useEffect(()=>{
-        if(socket?!socket.connected:true){
+    useEffect(() => {
+        if (socket ? !socket.connected : true) {
             initSocketIo(token);
         }
 
-        if(socket?socket.connected:true){
+        if (socket) {
             socket.emit('setIsOnline');
         }
     }, [token, socket]);
@@ -57,6 +57,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     username: data.username,
                     name: data.name,
                     pfp: (data.pfp) ? (data.pfp) : (pfp),
+                    isOnline: data.isOnline,
+                    lastSeen: data.lastSeen,
                     messagePageIndex: 0
                 }]
             });
@@ -70,12 +72,11 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             if (chatData[message.isMyMessage ? message.receiver : message.sender]) {
                 const messageIds = Object.keys(chatData[message.isMyMessage ? message.receiver : message.sender]);
                 latestMessageId = parseInt(messageIds[messageIds.length - 1]);
-                console.log(latestMessageId)
             }
             const messageID = latestMessageId + 1;
 
             // console.log(chatData)
-            if(!message.isConnectionMsg){
+            if (!message.isConnectionMsg) {
                 socket.emit('deliverMessage', {
                     messageId: message.messageId,
                     sender: message.sender,
@@ -97,7 +98,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                                 sentDatetime: new Date(message.sentDatetime),
                                 isMyMessage: message.isMyMessage,
                                 status: message.status,
-                                isRead: message.status==='read',
+                                isRead: message.status === 'read',
                                 isConnectionMsg: message.isConnectionMsg
                             }
                         }
@@ -129,18 +130,18 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                         ...prevChatData[receiver][id],
                         status: status,
                         messageId: messageId,
-                        isRead: status==='read',
+                        isRead: status === 'read',
                         sentDatetime: new Date(sentDatetime),
                         sendingDatetime: new Date(sendingDatetime)
                     }
                 }
-    
+
                 return {
                     ...prevChatData,
                     [receiver]: updatedConversation
                 }
             });
-            
+
         })
 
         socket.on('deliveredStatusChange', (data) => {
@@ -151,7 +152,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
 
             setChatData((prevChatData) => {
-                const targetMessageEntry = Object.entries(prevChatData[receiver]).find((msg)=>msg[1].messageId===messageId);
+                const targetMessageEntry = Object.entries(prevChatData[receiver]).find((msg) => msg[1].messageId === messageId);
                 const id = targetMessageEntry[0];
 
                 const updatedConversation = {
@@ -159,11 +160,11 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     [id]: {
                         ...prevChatData[receiver][id],
                         status: status,
-                        isRead: status==='read',
+                        isRead: status === 'read',
                         deliveredDatetime: deliveredDatetime
                     }
                 }
-    
+
                 return {
                     ...prevChatData,
                     [receiver]: updatedConversation
@@ -176,25 +177,25 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             const status = data.status;
             const readDatetime = new Date(data.readDatetime);
 
-            
+
             setChatData((prevChatData) => {
 
                 let updatedConversation;
-                try{
+                try {
 
                     updatedConversation = Object.fromEntries(
-                        Object.entries(prevChatData[receiver]).map(([id, message])=>{
-                            if(message.isMyMessage){
-                                return [id, {...message, isRead: status==='read', status: status, readDatetime: readDatetime}];
+                        Object.entries(prevChatData[receiver]).map(([id, message]) => {
+                            if (message.isMyMessage) {
+                                return [id, { ...message, isRead: status === 'read', status: status, readDatetime: readDatetime }];
                             }
                             return [id, message];
                         })
                     )
                 }
-                catch(e){
+                catch (e) {
                     updatedConversation = {};
                 }
-    
+
                 return {
                     ...prevChatData,
                     [receiver]: updatedConversation
@@ -213,14 +214,14 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             setChatData((prevChatData) => {
 
                 const updatedConversation = Object.fromEntries(
-                    Object.entries(prevChatData[sender]).map(([id, message])=>{
-                        if(!message.isMyMessage){
-                            return [id, {...message, isRead: status==='read', status: status, readDatetime: readDatetime}];
+                    Object.entries(prevChatData[sender]).map(([id, message]) => {
+                        if (!message.isMyMessage) {
+                            return [id, { ...message, isRead: status === 'read', status: status, readDatetime: readDatetime }];
                         }
                         return [id, message];
                     })
                 )
-    
+
                 return {
                     ...prevChatData,
                     [sender]: updatedConversation
@@ -237,14 +238,14 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             setChatData((prevChatData) => {
 
                 const updatedConversation = Object.fromEntries(
-                    Object.entries(prevChatData[sender]).map(([id, message])=>{
-                        if(!message.isMyMessage && (!message.isRead && message.status!='sending')){
-                            return [id, {...message, isRead: status==='read', status: status, deliveredDatetime: deliveredDatetime}];
+                    Object.entries(prevChatData[sender]).map(([id, message]) => {
+                        if (!message.isMyMessage && (!message.isRead && message.status != 'sending')) {
+                            return [id, { ...message, isRead: status === 'read', status: status, deliveredDatetime: deliveredDatetime }];
                         }
                         return [id, message];
                     })
                 )
-    
+
                 return {
                     ...prevChatData,
                     [sender]: updatedConversation
@@ -258,25 +259,25 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             const status = data.status;
             const deliveredDatetime = new Date(data.deliveredDatetime);
 
-            if(contactData.some(contact=>contact.id===receiver)){
+            if (contactData.some(contact => contact.id === receiver)) {
                 setChatData((prevChatData) => {
-    
+
                     let updatedConversation;
-                    try{
+                    try {
 
                         updatedConversation = Object.fromEntries(
-                            Object.entries(prevChatData[receiver]).map(([id, message])=>{
-                                if(message.isMyMessage && (!message.isRead && message.status!='sending')){
-                                    return [id, {...message, isRead: status==='read', status: status, deliveredDatetime: deliveredDatetime}];
+                            Object.entries(prevChatData[receiver]).map(([id, message]) => {
+                                if (message.isMyMessage && (!message.isRead && message.status != 'sending')) {
+                                    return [id, { ...message, isRead: status === 'read', status: status, deliveredDatetime: deliveredDatetime }];
                                 }
                                 return [id, message];
                             })
                         )
                     }
-                    catch(e){
+                    catch (e) {
                         updatedConversation = {};
                     }
-        
+
                     return {
                         ...prevChatData,
                         [receiver]: updatedConversation
@@ -286,18 +287,18 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
         });
 
 
-        socket.on('changeIsOnline', (data)=>{
+        socket.on('changeIsOnline', (data) => {
             const sender = data.sender;
             const isOnline = data.isOnline;
             const lastSeen = data.lastSeen;
 
-            if(contactData.some(contact=>contact.id===sender)){
-                setContactData((prevContactData)=>{
-                    let updatedContact = contactData.find(contact=>contact.id===sender);
+            if (contactData.some(contact => contact.id === sender)) {
+                setContactData((prevContactData) => {
+                    let updatedContact = contactData.find(contact => contact.id === sender);
                     updatedContact.isOnline = isOnline;
                     updatedContact.lastSeen = lastSeen;
 
-                    const prevContactDataFiltered = [...prevContactData].filter(contact=>contact.id!==sender);
+                    const prevContactDataFiltered = [...prevContactData].filter(contact => contact.id !== sender);
 
                     return [
                         ...prevContactDataFiltered,
@@ -305,10 +306,32 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     ]
                 });
 
-                if(activeContactData.id===sender){
-                    setActiveContactData({...activeContactData, isOnline, lastSeen})
+                if (activeContactData.id === sender) {
+                    setActiveContactData({ ...activeContactData, isOnline, lastSeen })
                 }
             }
+        });
+
+        socket.on('receiveNotification', async (data) => {
+            const notification = data.notification;
+
+            const notificationEntry = {
+                id: notification._id,
+
+                senderUsername: notification.senderUsername,
+                senderPfp: (notification.senderPfp) ? (notification.senderPfp) : (pfp),
+
+                notification_type: notification.notificationType,
+
+                datetime: new Date(notification.createdAt),
+
+                isRead: notification.isRead,
+
+            };
+            setNotificationData((prevNotificationData) => {
+                const sortedPrevNotificationData = prevNotificationData.sort((a, b)=>b.datetime.getTime()-a.datetime.getTime());
+                return [...sortedPrevNotificationData.slice(0, notification.limit-1), notificationEntry]
+            });
         });
 
 
@@ -323,6 +346,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             socket.off('deliverMessageConfirmed');
             socket.off('deliveredStatusChangeAll');
             socket.off('changeIsOnline');
+
+            socket.off('receiveNotification');
         }
     }, [chatData, contactData]);
 
@@ -330,7 +355,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
     useEffect(() => {
 
         async function getFriends() {
-            try{
+            try {
                 setShowContactPaneSpinner(true);
                 const response = await fetch(config.serverURL + '/api/getfriends', {
                     method: 'get',
@@ -338,9 +363,9 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                         'Authorization': token
                     }
                 })
-    
+
                 const data = await response.json();
-    
+
                 if (response.ok) {
                     let friendsData = [];
                     data.friends.forEach(friend => {
@@ -358,10 +383,10 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     setContactData(friendsData);
                 }
             }
-            catch(e){
+            catch (e) {
 
             }
-            finally{
+            finally {
                 setShowContactPaneSpinner(false);
             }
         }
@@ -383,7 +408,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     let latestMessageId = 0;
                     if (messagesData[message.isMyMessage ? message.receiver : message.sender]) {
                         const messageIds = Object.keys(messagesData[message.isMyMessage ? message.receiver : message.sender]);
-                        latestMessageId = messageIds[messageIds.length-1]
+                        latestMessageId = messageIds[messageIds.length - 1]
                     }
                     const messageID = parseInt(latestMessageId) + 1;
 
@@ -404,7 +429,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
                                 isMyMessage: message.isMyMessage,
                                 status: message.status,
-                                isRead: message.status==='read'?true:false,
+                                isRead: message.status === 'read' ? true : false,
                                 isConnectionMsg: message.isConnectionMsg
                             }
                         }
@@ -420,21 +445,54 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             }
         }
 
+
+        async function getNotifications() {
+            try {
+                const response = await fetch(config.serverURL + '/api/getnotifications', {
+                    method: 'get',
+                    headers: {
+                        'Authorization': token
+                    }
+                })
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    let notificationArray = [];
+                    data.notifications.forEach(notification => {
+                        notificationArray.push({
+                            id: notification._id,
+
+                            senderUsername: notification.senderUsername,
+                            senderPfp: (notification.senderPfp) ? (notification.senderPfp) : (pfp),
+
+                            notification_type: notification.notificationType,
+
+                            datetime: new Date(notification.createdAt),
+
+                            isRead: notification.isRead,
+
+                        });
+                    });
+                    setNotificationData(notificationArray);
+                }
+            }
+            catch (e) {
+
+            }
+            finally {
+
+            }
+        }
+
         getFriends();
         getMessages();
 
 
-        setNotificationData({
-
-            1: { "receiverID": 4, "senderID": 3, "notification_type": "friend_request_accepted", "datetime": new Date('2024-02-16T12:30:00+05:30'), "isRead": false },
-            2: { "receiverID": 4, "senderID": 2, "notification_type": "friend_request_accepted", "datetime": new Date('2024-02-17T10:30:00+05:30'), "isRead": false },
-
-            3: { "receiverID": 4, "senderID": 1, "notification_type": "friend_request_accepted", "datetime": new Date('2024-02-17T14:30:00+05:30'), "isRead": false },
-
-        })
+        getNotifications();
 
 
-        return ()=>{
+        return () => {
             socket.off('deliverMessageAll');
         }
     }, [])
@@ -453,7 +511,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     (isIoConnected) ?
                         (
                             <>
-                                <ContactPane friendRequests={friendRequests} setFriendRequests={setFriendRequests} showSpinner={showContactPaneSpinner} setShowSpinner={setShowContactPaneSpinner} contactData={contactData} chatData={chatData} onContactClick={setActiveContactData} onIsChatActive={setIsChatActive} isChatActive={isChatActive} isMobileScreen={isMobileScreen} activeContactData={activeContactData} notificationData={notificationData} setNotificationData={setNotificationData} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsLoading={setIsLoading} activeContact={activeContact} setActiveContact={setActiveContact} />
+                                <ContactPane friendRequests={friendRequests} setFriendRequests={setFriendRequests} showSpinner={showContactPaneSpinner} setShowSpinner={setShowContactPaneSpinner} contactData={contactData} chatData={chatData} onContactClick={setActiveContactData} onIsChatActive={setIsChatActive} isChatActive={isChatActive} isMobileScreen={isMobileScreen} activeContactData={activeContactData} notificationData={notificationData} setNotificationData={setNotificationData} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setIsLoading={setIsLoading} activeContact={activeContact} setActiveContact={setActiveContact} setContactData={setContactData} />
                                 <ChatPane friendRequests={friendRequests} setFriendRequests={setFriendRequests} chatData={chatData} setChatData={setChatData} activeContactData={activeContactData} isMobileScreen={isMobileScreen} onIsChatActive={setIsChatActive} isChatActive={isChatActive} setActiveContact={setActiveContact} isNewMessage={isNewMessage} setIsNewMessage={setIsNewMessage} contactData={contactData} setContactData={setContactData} messageTransferredRef={messageTransferredRef} />
                                 <WelcomePane isChatActive={isChatActive} />
                             </>

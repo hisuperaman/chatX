@@ -1,4 +1,9 @@
+import { getDatetimeWordDateOnly } from "../../../utils/helpers";
+
 function DateBubble({date, isFirstMsg}){
+
+    const dateObj = new Date(date);
+    const dateString = getDatetimeWordDateOnly(dateObj);
 
     return (
 
@@ -6,7 +11,7 @@ function DateBubble({date, isFirstMsg}){
             (<div className="text-center text-sm flex flex-col border-b-2 border-light-line dark:border-dark-line mb-2">
                 
                 <div className="text-xs">
-                    {date}
+                    {dateString}
                 </div>
                 
             </div>)

@@ -10,6 +10,8 @@ function UserProfilePane({user, clickedUserID, onBackClick, isUserProfilePaneOpe
 
     async function handleAddFriendClick() {
         socket.emit('addFriend', {friendId: clickedUserID});
+
+        socket.emit('sentRequest', {friendId: clickedUserID})
     }
 
     useEffect(()=>{

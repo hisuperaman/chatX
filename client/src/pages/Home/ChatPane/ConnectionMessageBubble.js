@@ -1,5 +1,7 @@
+import { getDatetimeWordDateOnly } from "../../../utils/helpers";
+
 function ConnectionMessageBubble({message}){
-    const messageDate = `${message.sentDatetime.getFullYear()}/${message.sentDatetime.getMonth()+1}/${message.sentDatetime.getDate()}`;
+    const messageDate = getDatetimeWordDateOnly(message.sentDatetime);
 
     const hours = message.sentDatetime.getHours();
     const minutes = message.sentDatetime.getMinutes();

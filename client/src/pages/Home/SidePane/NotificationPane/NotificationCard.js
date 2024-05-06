@@ -1,3 +1,4 @@
+import { socket } from "../../../../sio";
 import ProfilePicture from "../../components/common/ProfilePicture";
 
 
@@ -9,7 +10,7 @@ function NotReadBadge(){
     )
 }
 
-function NotificationCard({contact, notification, setNotificationData}){
+function NotificationCard({notification, setNotificationData}){
 
     const hours = notification.datetime.getHours();
     const minutes = notification.datetime.getMinutes();
@@ -20,29 +21,41 @@ function NotificationCard({contact, notification, setNotificationData}){
 
 
     let text = "";
-    if(notification.notification_type==="friend_request_accepted" && contact){
-        text = `accepted your friend request`;
+    if(notification.notification_type==="request_sent"){
+        text = `sent you a friend request`;
+    }
+    else if(notification.notification_type==="request_accepted"){
+        text = `has accepted your friend request`;
+    }
+    else if(notification.notification_type==="request_rejected"){
+        text = `has rejected your friend request`;
     }
 
 
     function handleNotificationClick(){
-        setNotificationData((previousNotificationData)=>{
-            let newNotification = {...notification, 'isRead': true};
-
-            return {...previousNotificationData, [notification.id]: newNotification};
-        })
+        if(!notification.isRead){
+            socket.emit('notificationRead', {id: notification.id});
+    
+            setNotificationData((previousNotificationData)=>{
+                let newNotification = {...notification, 'isRead': true};
+                const notificationDataUpdated = previousNotificationData.filter(n=>n.id!==notification.id);
+                console.log(notification.id)
+    
+                return [...notificationDataUpdated, newNotification];
+            })
+        }
     }
 
     return (
 
         <div onClick={handleNotificationClick} className={`relative flex flex-row cursor-pointer border-b-2 border-light-line dark:border-dark-line p-4 hover:bg-light-hover2 dark:hover:bg-dark-hover2`}>
             <div>
-                <ProfilePicture img={(contact)?(contact.pfp):('')} />
+                <ProfilePicture img={(notification)?(notification.senderPfp):('')} />
             </div>
 
             <div className="flex flex-col justify-center ml-3 w-5/6">
                 <p className="font-thin text-sm w-full">
-                    <span className="font-bold">{(contact)?(contact.name):('')} </span>
+                    <span className="font-bold">{(notification)?(notification.senderUsername):('')} </span>
                     {text}
                 </p>
 

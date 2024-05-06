@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Friend from "../models/friend-model.js";
 import Message from "../models/message-model.js";
 import User from "../models/user-model.js";
+import Notification from "../models/notification-model.js";
 
 
 const messagePageSize = 10;
@@ -339,6 +340,58 @@ export async function rejectRequest(req, res) {
 
         return res.status(201).json({
             message: 'Request rejected'
+        });
+    }
+    catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}
+
+
+
+// notifications
+export async function getNotifications(req, res) {
+    try {
+        const user = await User.findById(req.userId);
+
+        const notifications = (await Notification.find({receiver: user._id}).populate(['sender'])).map((notification)=>{
+            return {
+                _id: notification._id.toHexString(),
+
+                senderUsername: notification.sender.username,
+                senderPfp: notification.sender.pfp,
+
+                notificationType: notification.notificationType,
+
+                createdAt: notification.createdAt,
+
+                isRead: notification.isRead
+            };
+        });
+
+        return res.status(200).json({
+            notifications
+        });
+    }
+    catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}
+
+export async function clearAllNotifications(req, res) {
+    try {
+        const user = await User.findById(req.userId);
+
+        await Notification.deleteMany({receiver: user._id});
+
+        return res.status(200).json({
+            isDeleted: true
         });
     }
     catch (e) {

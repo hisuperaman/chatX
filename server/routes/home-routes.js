@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getUser, getFriends, home, getMessages, searchUsers, updateUser, getFriendRequests, getUserProfileData, rejectRequest, getMessagesByFriendId } from "../controllers/home-controller.js";
+import { getUser, getFriends, home, getMessages, searchUsers, updateUser, getFriendRequests, getUserProfileData, rejectRequest, getMessagesByFriendId, getNotifications, clearAllNotifications } from "../controllers/home-controller.js";
 import { deleteFriend, deleteUser } from "../controllers/dev-controller.js";
 import { verifyToken } from "../middleware/auth-middleware.js";
 
@@ -23,6 +23,9 @@ router.post('/getuserprofiledata', verifyToken, getUserProfileData);
 router.post('/rejectrequest', verifyToken, rejectRequest);
 router.post('/deleteuser', deleteUser);
 router.post('/deletefriend', deleteFriend);
+
+router.get('/getnotifications', verifyToken, getNotifications);
+router.post('/clearallnotifications', verifyToken, clearAllNotifications);
 
 
 export default router;

@@ -65,9 +65,7 @@ function UserProfile({name, pfp, onButtonClick}){
     )
 }
 
-function ContactPaneTopBar({onButtonClick, notificationCount, isDarkMode, setIsDarkMode, setIsLoading, userData}){
-    
-    const [searchQuery, setSearchQuery] = useState('');
+function ContactPaneTopBar({onButtonClick, notificationCount, isDarkMode, setIsDarkMode, setIsLoading, userData, setContactData, searchQuery, setSearchQuery}){
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -76,7 +74,7 @@ function ContactPaneTopBar({onButtonClick, notificationCount, isDarkMode, setIsD
     }
 
     useEffect(()=>{
-        
+
     }, [searchQuery]);
     
     return (

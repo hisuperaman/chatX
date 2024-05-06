@@ -2,7 +2,7 @@ import ContactCard from "./ContactCard";
 import { useEffect, useState, useRef } from "react";
 import Spinner from '../../../components/common/Spinner';
 
-function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData, onContactClick, onIsChatActive, isChatActive, activeContact, setActiveContact }) {
+function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData, onContactClick, onIsChatActive, isChatActive, activeContact, setActiveContact, searchQuery }) {
 
     const [prevChatData, setPrevChatData] = useState(chatData);
     const [newMsgContactIDs, setNewMsgContactIDs] = useState([]);
@@ -100,16 +100,29 @@ function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData
 
     useEffect(() => {
         if (contactCardData) {
-            // sorts the array in descending order so that latest active contact is at top
-            setSortedContactCardData(contactCardData.sort((a, b) => b.lastMsg.sendingDatetime.getTime() - a.lastMsg.sendingDatetime.getTime()));
+            if (searchQuery.length > 0) {
+                setSortedContactCardData((prevSortedContactCardData) => {
+                    const sortedContactData = contactCardData.sort((a, b) => {
+                        const countA = (a.username.match(new RegExp('^'+searchQuery, 'i')) || []).length;
+                        const countB = (b.username.match(new RegExp('^'+searchQuery, 'i')) || []).length;
+
+                        return countB - countA;
+                    })
+                    return [...sortedContactData];
+                });
+            }
+            else {
+                // sorts the array in descending order so that latest active contact is at top
+                setSortedContactCardData(contactCardData.sort((a, b) => b.lastMsg.sendingDatetime.getTime() - a.lastMsg.sendingDatetime.getTime()));
+            }
 
         }
-    }, [contactCardData]);
+    }, [contactCardData, searchQuery]);
 
 
     return (
         <>
-            {((sortedContactCardData.length <= 0 && contactData.length>0) || showSpinner) ? (
+            {((sortedContactCardData.length <= 0 && contactData.length > 0) || showSpinner) ? (
                 <div className="mt-3 overflow-hidden">
                     <Spinner />
                 </div>

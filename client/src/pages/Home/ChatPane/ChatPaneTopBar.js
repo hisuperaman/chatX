@@ -5,7 +5,7 @@ import ContactName from "../components/common/ContactName";
 import BackButton from "../components/common/BackButton";
 import ChatPaneMenuItems from "./ChatPaneMenuItems";
 import { useState } from "react";
-import { getDatetimeWord } from "../../../utils/helpers";
+import { getDatetimeWordWithDay } from "../../../utils/helpers";
 
 function ChatPaneTopBar({ activeContactData, isMobileScreen, onIsChatActive, setActiveContact, setIsUserProfilePaneOpen }) {
 
@@ -23,7 +23,7 @@ function ChatPaneTopBar({ activeContactData, isMobileScreen, onIsChatActive, set
 
     const lastSeen = activeContactData.lastSeen;
 
-    const lastSeenString = `Last seen ${getDatetimeWord(lastSeen)}`;
+    const lastSeenString = `Last seen ${getDatetimeWordWithDay(lastSeen)}`;
 
 
     return (

@@ -10,4 +10,5 @@ export function initSocketIo(authToken){
             token: authToken
         }
     });
+    
 }

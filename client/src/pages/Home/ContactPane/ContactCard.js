@@ -2,7 +2,7 @@ import ProfilePicture from "../components/common/ProfilePicture";
 import ContactName from "../components/common/ContactName";
 import { useEffect, useRef } from "react";
 import { CSSTransition } from "react-transition-group";
-import { getDatetimeWord } from "../../../utils/helpers";
+import { getDatetimeWordWithDay } from "../../../utils/helpers";
 import SentIcon from "../components/common/SentIcon";
 import DeliveredIcon from "../components/common/DeliveredIcon";
 import ReadIcon from "../components/common/ReadIcon";
@@ -74,7 +74,7 @@ function ContactCard({ hasNewMessages, name, username, pfp, lastMsg, unreadMsgCo
                 </div>
 
                 <div className="ml-auto text-xs flex flex-col">
-                    <p className="opacity-80">{getDatetimeWord(lastMsg.sendingDatetime)}</p>
+                    <p className="opacity-80">{getDatetimeWordWithDay(lastMsg.sendingDatetime)}</p>
 
                     <UnreadMsgBadge unreadMsgCount={unreadMsgCount} isActive={isActive} />
                 </div>

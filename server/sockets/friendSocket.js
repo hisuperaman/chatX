@@ -2,6 +2,10 @@ import User from "../models/user-model.js";
 import Friend from "../models/friend-model.js";
 import Message from "../models/message-model.js";
 import mongoose from "mongoose";
+import Notification from "../models/notification-model.js";
+
+
+const notificationsLimit = 10;
 
 function friendSocket(io, socket) {
     socket.on('addFriend', async (data) => {
@@ -55,6 +59,32 @@ function friendSocket(io, socket) {
                 }
             });
 
+            const createdNotification = new Notification({
+                receiver: data.friendId,
+                sender: user._id,
+                notificationType: 'request_sent'
+            });
+            await createdNotification.save();
+
+            const notification = await Notification.findById(createdNotification._id).populate(['sender', 'receiver']);
+
+            io.to(data.friendId).emit('receiveNotification', {
+                notification: {
+                    _id: notification._id.toHexString(),
+
+                    senderUsername: notification.sender.username,
+                    senderPfp: notification.sender.pfp,
+
+                    notificationType: notification.notificationType,
+
+                    createdAt: notification.createdAt,
+
+                    isRead: notification.isRead,
+
+                    limit: notificationsLimit
+                }
+            });
+
             socket.emit('requestSentConfirmed', { message: 'Friend request sent' });
             socket.emit('requestSentConfirmedInner', { message: 'Friend request sent' });
 
@@ -104,6 +134,9 @@ function friendSocket(io, socket) {
                 about: user.about,
                 email: user.email,
                 pfp: user.pfp,
+
+                isOnline: user.isOnline,
+                lastSeen: user.lastSeen,
             });
 
             io.to(data.friendId).emit('receiveMessage', {
@@ -127,6 +160,9 @@ function friendSocket(io, socket) {
                 about: friendUser.about,
                 email: friendUser.email,
                 pfp: friendUser.pfp,
+
+                isOnline: friendUser.isOnline,
+                lastSeen: friendUser.lastSeen,
             });
 
             socket.emit('receiveMessage', {
@@ -148,6 +184,33 @@ function friendSocket(io, socket) {
                 isFriend: true,
                 isPending: false,
                 isPendingByMe: false
+            });
+
+
+            const createdNotification = new Notification({
+                receiver: data.friendId,
+                sender: user._id,
+                notificationType: 'request_accepted'
+            });
+            await createdNotification.save();
+
+            const notification = await Notification.findById(createdNotification._id).populate(['sender', 'receiver']);
+
+            io.to(data.friendId).emit('receiveNotification', {
+                notification: {
+                    _id: notification._id.toHexString(),
+
+                    senderUsername: notification.sender.username,
+                    senderPfp: notification.sender.pfp,
+
+                    notificationType: notification.notificationType,
+
+                    createdAt: notification.createdAt,
+
+                    isRead: notification.isRead,
+
+                    limit: notificationsLimit
+                }
             });
         }
         catch (e) {
@@ -189,6 +252,33 @@ function friendSocket(io, socket) {
                 isFriend: false,
                 isPending: false,
                 isPendingByMe: false
+            });
+
+
+            const createdNotification = new Notification({
+                receiver: data.friendId,
+                sender: user._id,
+                notificationType: 'request_rejected'
+            });
+            await createdNotification.save();
+
+            const notification = await Notification.findById(createdNotification._id).populate(['sender', 'receiver']);
+
+            io.to(data.friendId).emit('receiveNotification', {
+                notification: {
+                    _id: notification._id.toHexString(),
+
+                    senderUsername: notification.sender.username,
+                    senderPfp: notification.sender.pfp,
+
+                    notificationType: notification.notificationType,
+
+                    createdAt: notification.createdAt,
+
+                    isRead: notification.isRead,
+
+                    limit: notificationsLimit
+                }
             });
         }
         catch (e) {
