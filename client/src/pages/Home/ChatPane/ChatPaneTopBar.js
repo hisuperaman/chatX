@@ -23,7 +23,7 @@ function ChatPaneTopBar({ activeContactData, isMobileScreen, onIsChatActive, set
 
     const lastSeen = activeContactData.lastSeen;
 
-    const lastSeenString = `Last seen ${getDatetimeWordWithDay(lastSeen)}`;
+    const lastSeenString = `Last seen ${getDatetimeWordWithDay(lastSeen, true)}`;
 
 
     return (
