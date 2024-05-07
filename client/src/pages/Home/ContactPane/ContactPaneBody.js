@@ -1,6 +1,8 @@
 import ContactCard from "./ContactCard";
 import { useEffect, useState, useRef } from "react";
 import Spinner from '../../../components/common/Spinner';
+import { NothingFoundDiv } from "../../../components/common/NothingFoundDiv";
+import { NoFriendsIcon } from "./components/NoFriendsIcon";
 
 function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData, onContactClick, onIsChatActive, isChatActive, activeContact, setActiveContact, searchQuery }) {
 
@@ -103,8 +105,8 @@ function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData
             if (searchQuery.length > 0) {
                 setSortedContactCardData((prevSortedContactCardData) => {
                     const sortedContactData = contactCardData.sort((a, b) => {
-                        const countA = (a.username.match(new RegExp('^'+searchQuery, 'i')) || []).length;
-                        const countB = (b.username.match(new RegExp('^'+searchQuery, 'i')) || []).length;
+                        const countA = (a.username.match(new RegExp('^' + searchQuery, 'i')) || []).length;
+                        const countB = (b.username.match(new RegExp('^' + searchQuery, 'i')) || []).length;
 
                         return countB - countA;
                     })
@@ -128,18 +130,21 @@ function ContactPaneBody({ showSpinner, contactData, chatData, activeContactData
                 </div>
             )
                 :
-                <ul className='flex flex-col overflow-y-auto'>
 
-                    {sortedContactCardData.map((contact, index) => {
-                        return (
-                            <li key={contact.id}>
-                                {/* {console.log(newMsgContactIDs)} */}
-                                <ContactCard key={contact.id} hasNewMessages={newMsgContactIDs.includes(String(contact.id))} onContactClick={onContactClick} isUnfriend={contact.isUnfriend} onActive={setActiveContact} id={contact.id} isOnline={contact.isOnline} lastSeen={contact.lastSeen} username={contact.username} name={contact.name} about={contact.about} pfp={contact.pfp} lastMsg={contact.lastMsg} unreadMsgCount={contact.unreadMsgCount} isActive={contact.isActive} />
-                            </li>
-                        )
-                    })}
+                sortedContactCardData.length <= 0
+                    ? <NothingFoundDiv text={'No friends'} icon={<NoFriendsIcon />} />
+                    : <ul className='flex flex-col overflow-y-auto'>
 
-                </ul>
+                        {sortedContactCardData.map((contact, index) => {
+                            return (
+                                <li key={contact.id}>
+                                    {/* {console.log(newMsgContactIDs)} */}
+                                    <ContactCard key={contact.id} hasNewMessages={newMsgContactIDs.includes(String(contact.id))} onContactClick={onContactClick} isUnfriend={contact.isUnfriend} onActive={setActiveContact} id={contact.id} isOnline={contact.isOnline} lastSeen={contact.lastSeen} username={contact.username} name={contact.name} about={contact.about} pfp={contact.pfp} lastMsg={contact.lastMsg} unreadMsgCount={contact.unreadMsgCount} isActive={contact.isActive} />
+                                </li>
+                            )
+                        })}
+
+                    </ul>
             }
 
 

@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../../components/AuthContext";
 import Spinner from "../../../../components/common/Spinner";
 import { NothingFoundIcon } from "./components/NothingFoundIcon";
+import { NothingFoundDiv } from "../../../../components/common/NothingFoundDiv";
 
 
 function NotificationButton({ onButtonClick, text, isLoading }) {
@@ -101,14 +102,7 @@ function NotificationPane({ notificationData, setNotificationData, contactData }
         <>
             {
                 notificationData.length > 0 ? <NotificationButton onButtonClick={handleClearAllClick} text={"Clear all"} isLoading={primaryButtonLoading} />
-                    : <div className="flex flex-col items-center">
-                        <div className="flex justify-center">
-                            <NothingFoundIcon />
-                        </div>
-                        <div className="text-xl">
-                            No notifications
-                        </div>
-                    </div>
+                    : <NothingFoundDiv text={'No notifications'} />
             }
             <ul className="w-full">
                 {notificationItems}

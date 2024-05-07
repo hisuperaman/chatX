@@ -7,6 +7,8 @@ import { AuthContext } from "../../../../../components/AuthContext";
 import Spinner from "../../../../../components/common/Spinner";
 import RequestCard from "./RequestCard";
 import { socket } from "../../../../../sio";
+import { NothingFoundDiv } from "../../../../../components/common/NothingFoundDiv";
+import { NoFriendsIcon } from "../../../ContactPane/components/NoFriendsIcon";
 
 function FriendRequestsPane({ friendRequests, setFriendRequests, showSpinner, setShowSpinner, clickedUserID, setClickedUserID, setIsUserProfilePaneOpen, setClickedUser }) {
 
@@ -56,7 +58,7 @@ function FriendRequestsPane({ friendRequests, setFriendRequests, showSpinner, se
         setClickedUser(friendRequests.find((user) => user._id === id) ? friendRequests.find((user) => user._id === id) : {});
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(friendRequests)
     }, [friendRequests])
 
@@ -67,15 +69,19 @@ function FriendRequestsPane({ friendRequests, setFriendRequests, showSpinner, se
 
                 {showSpinner && <div className="mt-2 overflow-hidden"><Spinner /></div>}
 
+                {
+                    friendRequests.length <= 0
+                        ? <NothingFoundDiv text={'No friend requests'} icon={<NoFriendsIcon />} />
+                        :
+                        <div>
+                            {
+                                friendRequests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((user, index) => {
+                                    return <RequestCard key={user._id} id={user._id} username={user.username} name={user.name} requestCreatedAt={user.createdAt} pfp={user.pfp ? user.pfp : pfp} onUserCardClick={handleUserCardClick} setFriendRequests={setFriendRequests} />
+                                })
+                            }
+                        </div>
+                }
 
-                <div>
-                    {
-                        friendRequests.sort((a, b)=>new Date(b.createdAt) - new Date(a.createdAt)).map((user, index) => {
-                            console.log('hiiiii')
-                            return <RequestCard key={user._id} id={user._id} username={user.username} name={user.name} requestCreatedAt={user.createdAt} pfp={user.pfp ? user.pfp : pfp} onUserCardClick={handleUserCardClick} setFriendRequests={setFriendRequests} />
-                        })
-                    }
-                </div>
 
             </div>
 

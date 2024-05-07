@@ -146,10 +146,10 @@ function MessageBox({ activeContactData, isMobileScreen, onSend, rows, setRows }
 
 
     return (
-        <div className='flex flex-row items-end justify-center h-auto p-2 pl-0 bg-light-secondary dark:bg-dark-secondary'>
+        <div className='flex flex-row items-end justify-center h-auto p-2 pl-0 bg-light-secondary dark:bg-dark-secondary border-t-2 border-light-line dark:border-dark-line'>
 
             {
-                activeContactData.isUnfriend ? ''
+                activeContactData.isUnfriend ? <div className="\">You both need to be friends to send message</div>
                     :
 
                     <>

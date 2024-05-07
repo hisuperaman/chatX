@@ -26,6 +26,7 @@ module.exports = {
           button2Inactive: "#ffffff",
 
           bigButtonNormal: "#1d4ed8",
+          bigButtonNormalLight: "#9cb7f7",
           bigButtonHover: "#3a43c5",
 
           inputField: "rgb(55 65 81)",
@@ -39,14 +40,14 @@ module.exports = {
         },
         light: {
           primary: "white",
-          secondary: "#fafaff",
+          secondary: "#f5f5fa",
           hover1: "#9fa7b9",
           hover2: "#fafaff",
           line: "rgb(229 231 235)",
           focus: "rgb(29 78 216)",
-          active: "#fafaff",
+          active: "#f5f5fa",
           myMessage: "rgb(29 78 216)",
-          yourMessage: "#1E293B",
+          yourMessage: "#EEF6F8",
 
           button1Hover: "rgb(223,223,223)",
           button1Normal: "rgb(239,239,239)",

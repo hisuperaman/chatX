@@ -11,7 +11,7 @@ function ConnectionMessageBubble({message}){
     const messageTime = `${hoursString}:${minutesString} ${(hours<12 || hours===24)?('AM'):('PM')}`;
 
     return (
-        <div className="text-center text-sm flex flex-col border-b-2 border-light-line dark:border-dark-line mb-2">
+        <div className={`text-center text-sm flex flex-col border-b-2 mb-2 ${message.isConnectionMsg?'text-light-bigButtonNormal dark:text-dark-bigButtonNormalLight border-light-bigButtonNormal dark:border-dark-bigButtonNormalLight':(message.message.includes('reconnected')?' border-common-success':' border-common-danger')}`}>
             
             <div className="text-xs">
                 {messageDate} {messageTime}

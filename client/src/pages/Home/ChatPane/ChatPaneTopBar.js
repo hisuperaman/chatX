@@ -38,8 +38,11 @@ function ChatPaneTopBar({ activeContactData, isMobileScreen, onIsChatActive, set
                     <div className='ml-3'>
                         <ContactName name={activeContactData.username} isMobileScreen={isMobileScreen} />
                         <div className="text-sm">
-                            {activeContactData.isOnline?'Online'
-                                :lastSeenString}
+                            {
+                                activeContactData.isUnfriend ? 'Tap here for contact info'
+                                    : activeContactData.isOnline ? 'Online'
+                                        : lastSeenString
+                            }
                         </div>
                     </div>
                 </div>

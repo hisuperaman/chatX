@@ -26,7 +26,7 @@ function MessageBubble({ messageText, messageDatetime, isMyMessage, isLastMessag
     return (
         <div className="text-white p-1 flex">
 
-            <div className={`${(isMyMessage) ? ('ml-auto bg-light-myMessage dark:bg-dark-myMessage') : ('bg-light-yourMessage dark:bg-dark-yourMessage')} ${(isLastMessage) ? ('rounded-tr-xl') : ('rounded-r-xl')} p-2 inline-flex flex-col rounded-l-xl border max-w-[70%] break-words`}>
+            <div className={`${(isMyMessage) ? ('ml-auto bg-light-myMessage dark:bg-dark-myMessage') : ('bg-light-yourMessage text-black dark:text-white dark:bg-dark-yourMessage')} ${(isLastMessage) ? ('rounded-tr-xl') : ('rounded-r-xl')} p-2 inline-flex flex-col rounded-l-xl border max-w-[70%] break-words`}>
 
                 <div className="whitespace-pre-wrap text-sm">
                     {messageText}
