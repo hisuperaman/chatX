@@ -72,6 +72,20 @@ function UserProfilePaneBodyTop({ user, userMetaData, onAddFriendClick, setUserM
             setIsSecondButtonLoading(false);
         })
 
+        socket.on('unfriendedInner', (data) => {
+            if (data.request._id === user._id) {
+                setUserMetaData(data.metaData);
+            }
+
+            setIsSecondButtonLoading(false);
+        })
+
+        socket.on('unfriendConfirmed', (data) => {
+            setUserMetaData(data);
+
+            setIsSecondButtonLoading(false);
+        })
+
         return () => {
             socket.off('requestSentConfirmedInner');
             socket.off('requestAcceptConfirmedInner');
@@ -79,6 +93,9 @@ function UserProfilePaneBodyTop({ user, userMetaData, onAddFriendClick, setUserM
             socket.off('requestReceivedInner');
             socket.off('requestCancelConfirmed');
             socket.off('requestCanceledInner');
+
+            socket.off('unfriendedInner');
+            socket.off('unfriendConfirmed');
         }
     }, []);
 
@@ -132,6 +149,21 @@ function UserProfilePaneBodyTop({ user, userMetaData, onAddFriendClick, setUserM
         }
     }
 
+    async function handleUnfriendClick(e) {
+        e.stopPropagation();
+
+        try {
+            setIsSecondButtonLoading(true);
+
+            socket.emit('unfriend', { friendId: user._id });
+
+        }
+        catch (e) {
+
+            setIsSecondButtonLoading(false);
+        }
+    }
+
 
     return (
         <div className="flex flex-col">
@@ -157,7 +189,7 @@ function UserProfilePaneBodyTop({ user, userMetaData, onAddFriendClick, setUserM
                             (isSecondButtonLoading) ? <Button isConfirm={false} isLoading={true} />
                                 : <div />
                             :
-                            (userMetaData.isFriend) ? <Button text={'Unfriend'} onButtonClick={() => ''} />
+                            (userMetaData.isFriend) ? <Button text={'Unfriend'} onButtonClick={handleUnfriendClick} />
                                 : (userMetaData.isPending) ? <Button text={'Cancel'} onButtonClick={handleCancelClick} />
                                     : (userMetaData.isPendingByMe) ? <Button text={'Reject'} onButtonClick={handleRejectClick} />
                                         : <div />

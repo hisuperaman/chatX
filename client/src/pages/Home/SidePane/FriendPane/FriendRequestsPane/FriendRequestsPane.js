@@ -21,6 +21,12 @@ function FriendRequestsPane({ friendRequests, setFriendRequests, showSpinner, se
             });
         })
 
+        socket.on('unfriended', (data) => {
+            setFriendRequests((prevFriendRequests) => {
+                return prevFriendRequests.filter((friendRequest) => friendRequest._id !== data.id)
+            });
+        })
+
         socket.on('requestAcceptConfirmed', (data) => {
             setFriendRequests((prevFriendRequests) => {
                 return prevFriendRequests.filter((friendRequest) => friendRequest._id !== data.id)
@@ -38,6 +44,8 @@ function FriendRequestsPane({ friendRequests, setFriendRequests, showSpinner, se
             socket.off('requestCanceled');
             socket.off('requestAcceptConfirmed');
             socket.off('requestRejectConfirmed');
+
+            socket.off('unfriended');
         }
     }, [])
 

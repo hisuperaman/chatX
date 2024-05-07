@@ -83,7 +83,8 @@ function ChatPaneBody({ activeChatData, activeContactData, setChatData, MessageB
                                 isMyMessage: message.isMyMessage,
                                 status: message.status,
                                 isRead: message.status==='read'?true:false,
-                                isConnectionMsg: message.isConnectionMsg
+                                isConnectionMsg: message.isConnectionMsg,
+                                isReconnectionMsg: message.isReconnectionMsg,
                             }
                         }
                     };
@@ -174,7 +175,7 @@ function ChatPaneBody({ activeChatData, activeContactData, setChatData, MessageB
 
                     return <li key={`${message.id}`}>
 
-                        {(!message.isConnectionMsg) ?
+                        {(!message.isConnectionMsg && !message.isReconnectionMsg) ?
                             <>
                                 <DateBubble date={date} isFirstMsg={index === 0 && !messages[0].isConnectionMsg} />
                                 <MessageBubble messageText={message.message} messageDatetime={{ sendingDatetime: message.sendingDatetime, sentDatetime: message.sentDatetime, deliveredDatetime: message.deliveredDatetime, readDatetime: message.readDatetime }} isMyMessage={message.isMyMessage} isLastMessage={message.id === (Object.keys(activeChatDataRef.current)[Object.keys(activeChatDataRef.current).length - 1])} messageSent={messageSent} status={message.status} />

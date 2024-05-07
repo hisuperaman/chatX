@@ -18,7 +18,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
     const navigate = useNavigate();
 
-    const [activeContactData, setActiveContactData] = useState({ id: null, name: null, username: null, pfp: null, isOnline: null, lastSeen: null });
+    const [activeContactData, setActiveContactData] = useState({ id: null, name: null, username: null, pfp: null, isOnline: null, lastSeen: null, isUnfriend: null });
     const [isChatActive, setIsChatActive] = useState(false);
 
     const [chatData, setChatData] = useState({});
@@ -59,7 +59,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                     pfp: (data.pfp) ? (data.pfp) : (pfp),
                     isOnline: data.isOnline,
                     lastSeen: data.lastSeen,
-                    messagePageIndex: 0
+                    messagePageIndex: 0,
+                    isUnfriend: data.isUnfriend
                 }]
             });
         });
@@ -99,7 +100,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                                 isMyMessage: message.isMyMessage,
                                 status: message.status,
                                 isRead: message.status === 'read',
-                                isConnectionMsg: message.isConnectionMsg
+                                isConnectionMsg: message.isConnectionMsg,
+                                isReconnectionMsg: message.isReconnectionMsg,
                             }
                         }
                     }
@@ -335,6 +337,31 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
         });
 
 
+        socket.on('changeIsUnfriend', (data) => {
+            const user = data.user;
+            const isUnfriend = data.isUnfriend;
+
+            if (contactData.some(contact => contact.id === user)) {
+                setContactData((prevContactData) => {
+                    let updatedContact = contactData.find(contact => contact.id === user);
+                    updatedContact.isUnfriend = isUnfriend;
+
+                    const prevContactDataFiltered = [...prevContactData].filter(contact => contact.id !== user);
+
+                    return [
+                        ...prevContactDataFiltered,
+                        updatedContact
+                    ]
+                });
+
+                if (activeContactData.id === user) {
+                    setActiveContactData({ ...activeContactData, isUnfriend })
+                }
+            }
+        });
+
+
+
 
         return () => {
             socket.off('newFriend');
@@ -346,6 +373,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
             socket.off('deliverMessageConfirmed');
             socket.off('deliveredStatusChangeAll');
             socket.off('changeIsOnline');
+
+            socket.off('changeIsUnfriend');
 
             socket.off('receiveNotification');
         }
@@ -377,7 +406,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                             about: friend.about,
                             isOnline: friend.isOnline,
                             lastSeen: friend.lastSeen,
-                            messagePageIndex: 0
+                            messagePageIndex: 0,
+                            isUnfriend: friend.isUnfriend
                         });
                     });
                     setContactData(friendsData);
@@ -430,7 +460,8 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
                                 isMyMessage: message.isMyMessage,
                                 status: message.status,
                                 isRead: message.status === 'read' ? true : false,
-                                isConnectionMsg: message.isConnectionMsg
+                                isConnectionMsg: message.isConnectionMsg,
+                                isReconnectionMsg: message.isReconnectionMsg
                             }
                         }
                     };
@@ -497,6 +528,10 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
         }
     }, [])
 
+
+    useEffect(()=>{
+        console.log(chatData)
+    },[chatData])
 
     useEffect(() => {
         if (!token) {

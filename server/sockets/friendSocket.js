@@ -14,17 +14,24 @@ function friendSocket(io, socket) {
             const user = await User.findById(socket.id);
             const friendUser = await User.findById(data.friendId);
 
-            const exists = await Friend.exists({ user: user._id, friend: data.friendId });
+            const exists = await Friend.exists({ user: user._id, friend: data.friendId, status: 'pending' });
             if (exists) {
                 socket.emit('requestSentError', { message: 'Friend request already sent' })
                 return;
             }
-            const receivedRequest = await Friend.exists({ user: data.friendId, friend: user._id });
+            const receivedRequest = await Friend.exists({ user: data.friendId, friend: user._id, status: 'pending' });
             if (receivedRequest) {
                 socket.emit('requestSentError', { message: 'Friend request pending to respond' })
                 return;
             }
 
+            const unfriendedFriend = await Friend.findOne({
+                $or: [{ user: data.friendId, friend: user._id }, { user: user._id, friend: data.friendId }],
+                status: 'unfriend'
+            });
+            if (unfriendedFriend) {
+                await Friend.deleteOne({ _id: unfriendedFriend._id });
+            }
             const newFriend = await Friend.create({ user: user._id, friend: data.friendId, status: 'pending' });
 
             io.to(data.friendId).emit('requestReceived', {
@@ -110,16 +117,33 @@ function friendSocket(io, socket) {
             friend.status = 'accepted';
             await friend.save();
 
-            const message = await Message.create({
-                message: "You are now connected on ChatX",
-                sendingDatetime: new Date(),
-                deliveredDatetime: new Date(),
-                readDatetime: new Date(),
-                status: 'read',
-                isConnectionMsg: true,
-                receiver: user._id,
-                sender: friendId
-            })
+            const connectionMsgExists = await Message.exists({ $and: [{ $or: [{ sender: friendId, receiver: user._id }, { sender: user._id, receiver: friendId }] }, { isConnectionMsg: true }] });
+            let message;
+            if (!connectionMsgExists) {
+                message = await Message.create({
+                    message: "You are now connected on ChatX",
+                    sendingDatetime: new Date(),
+                    deliveredDatetime: new Date(),
+                    readDatetime: new Date(),
+                    status: 'read',
+                    isConnectionMsg: true,
+                    receiver: user._id,
+                    sender: friendId
+                })
+            }
+            else {
+                message = await Message.create({
+                    message: "You are now reconnected on ChatX",
+                    sendingDatetime: new Date(),
+                    deliveredDatetime: new Date(),
+                    readDatetime: new Date(),
+                    status: 'read',
+                    isReconnectionMsg: true,
+                    receiver: user._id,
+                    sender: friendId
+                })
+            }
+
 
             user.friends.push(new mongoose.Types.ObjectId(friendId));
             friendUser.friends.push(new mongoose.Types.ObjectId(user._id));
@@ -127,17 +151,54 @@ function friendSocket(io, socket) {
             await user.save();
             await friendUser.save();
 
-            io.to(data.friendId).emit('newFriend', {
-                _id: user._id.toHexString(),
-                name: user.name,
-                username: user.username,
-                about: user.about,
-                email: user.email,
-                pfp: user.pfp,
 
-                isOnline: user.isOnline,
-                lastSeen: user.lastSeen,
-            });
+            // if [not] friend was already friend, i.e. unfriend then friend
+            if (!connectionMsgExists) {
+                io.to(data.friendId).emit('newFriend', {
+                    _id: user._id.toHexString(),
+                    name: user.name,
+                    username: user.username,
+                    about: user.about,
+                    email: user.email,
+                    pfp: user.pfp,
+
+                    isOnline: user.isOnline,
+                    lastSeen: user.lastSeen,
+
+                    isUnfriend: friend.status==='unfriend'
+
+                });
+
+                socket.emit('newFriend', {
+                    _id: friendUser._id.toHexString(),
+                    name: friendUser.name,
+                    username: friendUser.username,
+                    about: friendUser.about,
+                    email: friendUser.email,
+                    pfp: friendUser.pfp,
+
+                    isOnline: friendUser.isOnline,
+                    lastSeen: friendUser.lastSeen,
+
+                    isUnfriend: friend.status==='unfriend'
+                });
+
+            }
+            else{
+                socket.emit('changeIsUnfriend', {
+                    user: friendId,
+                    isUnfriend: false
+                });
+
+                io.to(friendId).emit('changeIsUnfriend', {
+                    user: user._id,
+                    isUnfriend: false
+
+                });
+
+            }
+
+
 
             io.to(data.friendId).emit('receiveMessage', {
                 ...message._doc,
@@ -153,17 +214,7 @@ function friendSocket(io, socket) {
             });
 
 
-            socket.emit('newFriend', {
-                _id: friendUser._id.toHexString(),
-                name: friendUser.name,
-                username: friendUser.username,
-                about: friendUser.about,
-                email: friendUser.email,
-                pfp: friendUser.pfp,
 
-                isOnline: friendUser.isOnline,
-                lastSeen: friendUser.lastSeen,
-            });
 
             socket.emit('receiveMessage', {
                 ...message._doc,
@@ -185,6 +236,7 @@ function friendSocket(io, socket) {
                 isPending: false,
                 isPendingByMe: false
             });
+
 
 
             const createdNotification = new Notification({
@@ -328,6 +380,100 @@ function friendSocket(io, socket) {
             console.log(e)
             socket.emit('requestCancelError', { message: 'Internal server error' });
 
+        }
+    });
+
+
+    socket.on('unfriend', async (data) => {
+        try {
+
+            const user = await User.findById(socket.id);
+            const friendUser = await User.findById(data.friendId);
+
+            const exists = await Friend.exists({ $or: [{ user: user._id, friend: data.friendId }, { user: data.friendId, friend: user._id }] });
+            if (!exists) {
+                socket.emit('unfriendError', { message: 'User is not friend' })
+                return;
+            }
+
+            const theFriend = await Friend.findOne({ $or: [{ user: user._id, friend: data.friendId }, { user: data.friendId, friend: user._id }] });
+            theFriend.status = 'unfriend';
+            theFriend.save();
+
+            // disconnection message
+            const message = await Message.create({
+                message: "You are now disconnected on ChatX",
+                sendingDatetime: new Date(),
+                deliveredDatetime: new Date(),
+                readDatetime: new Date(),
+                status: 'read',
+                isReconnectionMsg: true,
+                receiver: friendUser._id,
+                sender: user._id
+            });
+
+            io.to(data.friendId).emit('receiveMessage', {
+                ...message._doc,
+                isMyMessage: message.sender.toHexString() === friendUser._id.toHexString()
+            });
+            socket.emit('receiveMessage', {
+                ...message._doc,
+                isMyMessage: message.sender.toHexString() === user._id.toHexString()
+            });
+
+            // decrement friend count
+            let userFriendsIndex = user.friends.indexOf(new mongoose.Types.ObjectId(friendUser._id));
+            if (userFriendsIndex !== -1) {
+                user.friends.splice(userFriendsIndex, 1);
+            }
+
+            let friendFriendsIndex = user.friends.indexOf(new mongoose.Types.ObjectId(user._id));
+            if (friendFriendsIndex !== -1) {
+                friendUser.friends.splice(friendFriendsIndex, 1);
+            }
+
+            await user.save();
+            await friendUser.save();
+
+            // unfriend socket events
+            io.to(data.friendId).emit('unfriended', {
+                id: user._id.toHexString(),
+            });
+            io.to(data.friendId).emit('unfriendedInner', {
+                request: {
+                    _id: user._id.toHexString(),
+                },
+                metaData: {
+                    friendCount: user.friends.length,
+                    createdAt: user.createdAt,
+                    isFriend: false,
+                    isPending: false,
+                    isPendingByMe: false
+                }
+            });
+
+            socket.emit('unfriendConfirmed', {
+                friendCount: friendUser.friends.length,
+                createdAt: friendUser.createdAt,
+                isFriend: false,
+                isPending: false,
+                isPendingByMe: false
+            });
+
+            socket.emit('changeIsUnfriend', {
+                user: data.friendId,
+                isUnfriend: true
+            });
+
+            io.to(data.friendId).emit('changeIsUnfriend', {
+                user: user._id,
+                isUnfriend: true
+            });
+
+        }
+        catch (e) {
+            console.log(e)
+            socket.emit('unfriendError', { message: 'Internal server error' });
         }
     })
 }

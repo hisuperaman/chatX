@@ -27,13 +27,13 @@ function UnreadMsgBadge({ unreadMsgCount, isActive }) {
     )
 }
 
-function ContactCard({ hasNewMessages, name, username, pfp, lastMsg, unreadMsgCount, onContactClick, id, onActive, isActive, about, isOnline, lastSeen }) {
+function ContactCard({ hasNewMessages, name, username, pfp, lastMsg, unreadMsgCount, onContactClick, id, onActive, isActive, about, isOnline, lastSeen, isUnfriend }) {
 
     const cardRef = useRef(null);
 
     function handleContactClick() {
         onActive(id);
-        onContactClick({ id: id, name: name, username: username, pfp: pfp, about: about, isOnline, lastSeen });
+        onContactClick({ id: id, name: name, username: username, pfp: pfp, about: about, isOnline, lastSeen, isUnfriend });
     }
 
 
@@ -55,7 +55,7 @@ function ContactCard({ hasNewMessages, name, username, pfp, lastMsg, unreadMsgCo
                     <div className="flex items-center font-thin text-sm">
                         <div className="mr-1">
                             {
-                                lastMsg.isMyMessage && !lastMsg.isConnectionMsg ?
+                                lastMsg.isMyMessage && !lastMsg.isConnectionMsg && !lastMsg.isReconnectionMsg ?
                                     <div className="ml-1">
                                         {
                                             lastMsg.status === 'sent' ? <SentIcon />

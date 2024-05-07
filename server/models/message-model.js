@@ -35,6 +35,10 @@ const MessageSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isReconnectionMsg: {
+        type: Boolean,
+        default: false
+    },
 })
 
 const Message = mongoose.model('Message', MessageSchema);

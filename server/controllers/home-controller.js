@@ -227,7 +227,7 @@ export async function getFriends(req, res) {
         // console.log(req.userId)
         const user = await User.findById(req.userId);
 
-        const friends = (await Friend.find({ $or: [{ user: user._id }, { friend: user._id }], status: 'accepted' }, { friend: 1, user: 1 }).populate(['friend', 'user'])).map((friendObj, idx) => {
+        const friends = (await Friend.find({ $and: [{$or: [{ user: user._id }, { friend: user._id }]}, {$or: [{status: 'accepted'}, {status: 'unfriend'}]}]}, { friend: 1, user: 1, status: 1 }).populate(['friend', 'user'])).map((friendObj, idx) => {
             if (friendObj.friend._id.toHexString() === user._id.toHexString()) {
                 return {
                     _id: friendObj.user._id.toHexString(),
@@ -238,7 +238,9 @@ export async function getFriends(req, res) {
                     pfp: friendObj.user.pfp,
 
                     isOnline: friendObj.user.isOnline,
-                    lastSeen: friendObj.user.lastSeen
+                    lastSeen: friendObj.user.lastSeen,
+
+                    isUnfriend: friendObj.status==='unfriend'
                 };
             }
             return {
@@ -250,7 +252,9 @@ export async function getFriends(req, res) {
                 pfp: friendObj.friend.pfp,
 
                 isOnline: friendObj.friend.isOnline,
-                lastSeen: friendObj.friend.lastSeen
+                lastSeen: friendObj.friend.lastSeen,
+
+                isUnfriend: friendObj.status==='unfriend'
             };
         });
 
