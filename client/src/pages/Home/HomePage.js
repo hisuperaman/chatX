@@ -50,19 +50,40 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
         socket.on('newFriend', (data) => {
             // console.log(contactData);
 
-            setContactData((prevContactData) => {
-                // console.log(data)
-                return [...prevContactData, {
-                    id: data._id,
-                    username: data.username,
-                    name: data.name,
-                    pfp: (data.pfp) ? (data.pfp) : (pfp),
-                    isOnline: data.isOnline,
-                    lastSeen: data.lastSeen,
-                    messagePageIndex: 0,
-                    isUnfriend: data.isUnfriend
-                }]
-            });
+            if (contactData.some(contact => contact.id === data._id)) {
+                setContactData((prevContactData) => {
+                    let updatedContact = contactData.find(contact => contact.id === data._id);
+                    updatedContact.isUnfriend = data.isUnfriend;
+
+                    const prevContactDataFiltered = [...prevContactData].filter(contact => contact.id !== data._id);
+
+                    return [
+                        ...prevContactDataFiltered,
+                        updatedContact
+                    ]
+                });
+
+                if (activeContactData.id === data._id) {
+                    setActiveContactData({ ...activeContactData, isUnfriend: data.isUnfriend })
+                }
+            }
+            else{
+                setContactData((prevContactData) => {
+                    // console.log(data)
+                    return [...prevContactData, {
+                        id: data._id,
+                        username: data.username,
+                        name: data.name,
+                        pfp: (data.pfp) ? (data.pfp) : (pfp),
+                        isOnline: data.isOnline,
+                        lastSeen: data.lastSeen,
+                        messagePageIndex: 0,
+                        isUnfriend: data.isUnfriend
+                    }]
+                });
+            }
+
+
         });
 
         socket.on('receiveMessage', (data) => {

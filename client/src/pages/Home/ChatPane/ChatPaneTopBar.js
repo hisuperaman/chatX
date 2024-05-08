@@ -37,7 +37,7 @@ function ChatPaneTopBar({ activeContactData, isMobileScreen, onIsChatActive, set
                     <ProfilePicture img={activeContactData.pfp} />
                     <div className='ml-3'>
                         <ContactName name={activeContactData.username} isMobileScreen={isMobileScreen} />
-                        <div className="text-sm">
+                        <div className="text-xs">
                             {
                                 activeContactData.isUnfriend ? 'Tap here for contact info'
                                     : activeContactData.isOnline ? 'Online'

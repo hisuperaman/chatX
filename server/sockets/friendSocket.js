@@ -153,7 +153,7 @@ function friendSocket(io, socket) {
 
 
             // if [not] friend was already friend, i.e. unfriend then friend
-            if (!connectionMsgExists) {
+            // if (!connectionMsgExists) {
                 io.to(data.friendId).emit('newFriend', {
                     _id: user._id.toHexString(),
                     name: user.name,
@@ -183,20 +183,20 @@ function friendSocket(io, socket) {
                     isUnfriend: friend.status==='unfriend'
                 });
 
-            }
-            else{
-                socket.emit('changeIsUnfriend', {
-                    user: friendId,
-                    isUnfriend: false
-                });
+            // }
+            // else{
+            //     socket.emit('changeIsUnfriend', {
+            //         user: friendId,
+            //         isUnfriend: false
+            //     });
 
-                io.to(friendId).emit('changeIsUnfriend', {
-                    user: user._id,
-                    isUnfriend: false
+            //     io.to(friendId).emit('changeIsUnfriend', {
+            //         user: user._id,
+            //         isUnfriend: false
 
-                });
+            //     });
 
-            }
+            // }
 
 
 

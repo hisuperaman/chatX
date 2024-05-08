@@ -19,6 +19,12 @@ const FriendSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+
+    isReconnected: {
+        type: Boolean,
+        default: false
+    }
+    ,
     
     messages: [{
         type: mongoose.Schema.Types.ObjectId,
