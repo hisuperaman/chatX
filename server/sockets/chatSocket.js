@@ -181,9 +181,9 @@ function chatSocket(io, socket) {
             isOnline: true
         });
 
-        socket.emit('setIsOnlineConfirmed', {
+        // socket.emit('setIsOnlineConfirmed', {
             
-        });
+        // });
     });
 
     socket.on('disconnect', async (data) => {
@@ -199,9 +199,9 @@ function chatSocket(io, socket) {
             lastSeen: user.lastSeen
         });
 
-        socket.emit('setIsOnlineConfirmed', {
+        // socket.emit('setIsOnlineConfirmed', {
             
-        });
+        // });
     });
 }
 

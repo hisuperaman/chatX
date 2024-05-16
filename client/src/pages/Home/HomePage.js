@@ -38,15 +38,16 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
     useEffect(() => {
         if (socket ? !socket.connected : true) {
+            console.log('hiiiiiiii')
             initSocketIo(token);
-        }
-
-        if (socket) {
-            socket.emit('setIsOnline');
         }
     }, [token, socket]);
 
     useEffect(() => {
+        socket.on('connect', ()=>{
+            socket.emit('setIsOnline');
+        })
+
         socket.on('newFriend', (data) => {
             // console.log(contactData);
 
