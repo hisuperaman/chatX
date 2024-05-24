@@ -209,7 +209,7 @@ function HomePage({ isMobileScreen, isDarkMode, setIsDarkMode, setIsLoading }) {
 
                     updatedConversation = Object.fromEntries(
                         Object.entries(prevChatData[receiver]).map(([id, message]) => {
-                            if (message.isMyMessage) {
+                            if (message.isMyMessage && (!message.isRead && message.status!='')) {
                                 return [id, { ...message, isRead: status === 'read', status: status, readDatetime: readDatetime }];
                             }
                             return [id, message];
