@@ -26,6 +26,7 @@ app.use(cors());
 //     methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Add PATCH method
 //     allowedHeaders: ['Content-Type', 'Authorization'],
 //   }));
+
 // middleware to automatically parse incoming request body to json for ease
 app.use(express.json());
 
