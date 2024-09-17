@@ -40,16 +40,13 @@ This is a real-time chat application built using the MERN stack (MongoDB, Expres
 1. Clone the repository:
    ```bash
    git clone https://github.com/hisuperaman/chatX.git .
-2. Navigate into the project directory:
-    ```bash
-    cd chat-app
-3. Install dependencies for both the server and client:
+2. Install dependencies for both the server and client:
     ```bash
     cd client
     npm install
     cd server
     npm install 
-4. Create a .env file in the root directory and add the following variables:
+3. Create a .env file in the root directory and add the following variables:
     ```bash
     DB_URI = your_mongodb_connection_string
 
@@ -62,7 +59,6 @@ This is a real-time chat application built using the MERN stack (MongoDB, Expres
     MAIL_PASS = your_password # app password for gmail
 
     SECRET_KEY = your_secret_key # e.g., secret!
-
 ## Running the Project
 
 1. Start the server:
@@ -73,7 +69,6 @@ This is a real-time chat application built using the MERN stack (MongoDB, Expres
    ```bash
    cd client
    npm run start
-
 ## Contributing
 
 Contributions are welcome! Feel free to submit a pull request or open an issue.
