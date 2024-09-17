@@ -19,6 +19,14 @@ This is a real-time chat application built using the MERN stack (MongoDB, Expres
 - Responsive user interface
 - Has dual themes, dark mode and light mode
 
+## Screenshots
+
+### 1. Login Page
+![Login Page](./screenshots/login_page.png)
+
+### 2. Chat Interface
+![Chat Interface](./screenshots/home_page.png)
+
 ## Tech Stack
 
 - **MongoDB**: For storing user data and chat messages
