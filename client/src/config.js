@@ -1,5 +1,5 @@
 const config = {
-    serverURL: 'https://chatx.adaptable.app',
+    serverURL: 'https://the-chatx.glitch.me',
     // serverURL: "http://localhost:8000"
 }
 
